@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GREEN API Test</title>
+    <style>
+        * {
+            font-family: "Comic Sans MS", cursive, sans-serif !important;
+        }
+        body {
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+        }
+        .form-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .response-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .response-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .response-section {
+            flex: 1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            background: #f9f9f9;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            min-height: 250px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #27ae60;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #219150;
+        }
+    </style>
+    <script defer>
+        async function callApi(method) {
+            const idInstance = document.getElementById('idInstance').value;
+            const apiToken = document.getElementById('apiToken').value;
+            let url = `https://1103.api.green-api.com/waInstance${idInstance}/${method}/${apiToken}`;
+            let options = {};
+            
+            if (method === 'sendMessage') {
+                url = `https://1103.api.green-api.com/waInstance${idInstance}/sendMessage/${apiToken}`;
+                options = {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        chatId: document.getElementById('chatId').value,
+                        message: document.getElementById('message').value
+                    })
+                };
+            } else if (method === 'sendFileByUrl') {
+            url = `https://api.green-api.com/waInstance${idInstance}/sendFileByUrl/${apiToken}`;
+            options = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    chatId: document.getElementById('chatId').value,
+                    urlFile: document.getElementById('fileUrl').value,
+                    fileName: 'docs'
+                })
+            };
+        }
+        
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json();
+            document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+            document.getElementById('output').textContent = `Ошибка: ${error.message}`;
+        }
+    }
+</script>
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <input type="text" id="idInstance" placeholder="idInstance">
+            <input type="text" id="apiToken" placeholder="ApiTokenInstance">
+            <button onclick="callApi('getSettings')">getSettings</button>
+            <button onclick="callApi('getStateInstance')">getStateInstance</button>
+            <input type="text" id="chatId" placeholder="77771234567">
+            <input type="text" id="message" placeholder="Hello World!">
+            <button onclick="callApi('sendMessage')">sendMessage</button>
+            <input type="text" id="fileUrl" placeholder="https://my.site.com/img/horse.png">
+            <button onclick="callApi('sendFileByUrl')">sendFileByUrl</button>
+        </div>
+        <div class="response-section" id="output">{
+    "idMessage": "3EBC7C7D0D787C7C0D3D"
+}</div>
+    </div>
+</body>
+</html>
